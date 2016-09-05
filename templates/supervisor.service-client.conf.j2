@@ -1,0 +1,18 @@
+########################################################################
+# digris api service client
+########################################################################
+[program:service-client]
+priority=300
+directory={{ encoder_run_dir }}
+command={{ encoder_run_dir }}/service/service_client.py
+    -i {{ encoder_service_client_id }}
+    -t {{ encoder_service_client_token }}
+    -u {{ encoder_service_client_url }}
+    -s {{ encoder_service_client_interval }}
+user={{ encoder_user }}
+startretries=120
+autostart=true
+autorestart=true
+redirect_stderr=True
+loglevel=info
+stdout_logfile=syslog

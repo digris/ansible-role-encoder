@@ -1,0 +1,56 @@
+########################################################################
+# odr dab & mot encoder processes
+########################################################################
+[group:odr-encoder]
+programs=dab-encoder,mot-encoder
+priority=500
+
+########################################################################
+# dab encoder
+########################################################################
+[program:dab-encoder]
+priority=102
+directory={{ encoder_run_dir }}
+command=/usr/local/bin/dabplus-enc
+    -d usb
+    -D
+    -r 48000
+    -c 2
+{% for output in encoder_outputs %}
+    -o {{ output }}
+{% endfor %}
+    -b {{ encoder_bitrate }}
+    -p {{ encoder_pad_size }}
+    -P pad.fifo
+user={{ encoder_user }}
+startretries=120
+autostart=true
+autorestart=true
+redirect_stderr=True
+loglevel=info
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=5
+stdout_logfile={{ encoder_log_dir }}/dab-encoder.log
+
+########################################################################
+# mot encoder
+########################################################################
+[program:mot-encoder]
+priority=103
+directory={{ encoder_run_dir }}
+command=/usr/local/bin/mot-encoder
+    --pad {{ encoder_pad_size }}
+    --remove-dls
+    --dir meta/slides
+    --sleep 20
+    --dls meta/dls.txt
+    --output pad.fifo
+user={{ encoder_user }}
+autostart=true
+autorestart=true
+redirect_stderr=True
+loglevel=info
+stopsignal=KILL
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=5
+stdout_logfile={{ encoder_log_dir }}/mot-encoder.log

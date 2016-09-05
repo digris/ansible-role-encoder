@@ -1,0 +1,23 @@
+#######################################################
+# digris DAB+ encoder                                 #
+#######################################################
+
+  IP:          \4{eth0}
+  Encoder ID:  {{ encoder_id }}
+
+  Encoder Outputs:
+{% for output in encoder_outputs %}
+    - {{ output }}
+{% endfor %}
+{% if encoder_ftp_enabled is defined and encoder_ftp_enabled == true %}
+
+  DLS FTP server:
+      Address:  ftp://\4{eth0}:{{ encoder_ftp_bind.split(':')[1] }}
+      Username: {{ encoder_ftp_username }}
+      Password: {{ encoder_ftp_password }}
+{% endif %}
+
+#######################################################
+
+
+

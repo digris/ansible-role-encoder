@@ -1,0 +1,29 @@
+---
+
+- name: Create script directory
+  file: path={{ encoder_run_dir }}/service/
+        state=directory
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+
+
+- name: Install python-requests package
+  apt: pkg=python-requests state=present
+
+- name: Add script file
+  copy: src=service_client.py
+        dest={{ encoder_run_dir }}/service/service_client.py
+        mode=0755
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+
+- name: Add supervisord config
+  template: src=supervisor.service-client.conf.j2
+            dest=/etc/supervisor/conf.d/service-client.conf
+
+- name: Enable process
+  supervisorctl: name='service-client' state=present
+
+- name: Restart supervisord processes
+  supervisorctl: name='service-client' state=restarted
+  ignore_errors: yes

@@ -1,0 +1,18 @@
+########################################################################
+# dls ftp interface
+########################################################################
+[program:dls-ftp]
+priority=200
+directory={{ encoder_run_dir }}
+command={{ encoder_run_dir }}/ftp/ftp_server.py
+    -u {{ encoder_ftp_username }}
+    -p {{ encoder_ftp_password }}
+    -b {{ encoder_ftp_bind }}
+    -r {{ encoder_run_dir }}/meta
+user={{ encoder_user }}
+startretries=120
+autostart=true
+autorestart=true
+redirect_stderr=True
+loglevel=info
+stdout_logfile=syslog

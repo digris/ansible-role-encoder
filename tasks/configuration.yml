@@ -1,0 +1,34 @@
+---
+
+- name: Install .asoundrc file for user
+  template: src=asoundrc.j2
+            dest={{ encoder_home_dir }}/.asoundrc
+  become: yes
+  become_user: '{{ encoder_user }}'
+
+- name: Create script directory
+  file: path={{ encoder_run_dir }} state=directory owner={{ encoder_user }} group={{ encoder_group }}
+
+- name: Create dls & slides directory
+  file: path={{ encoder_run_dir }}/meta/ state=directory owner={{ encoder_user }} group={{ encoder_group }}
+
+- name: Create dls & slides directory
+  file: path={{ encoder_run_dir }}/meta/slides/ state=directory owner={{ encoder_user }} group={{ encoder_group }}
+
+- name: Create initial dls text file
+  copy: content={{ encoder_initial_dls_text }} dest={{ encoder_run_dir }}/meta/dls.txt owner={{ encoder_user }} group={{ encoder_group }}
+
+- name: Add supervisord config
+  template: src=supervisor.encoder.conf.j2
+            dest=/etc/supervisor/conf.d/odr-encoder.conf
+  become: yes
+  become_user: root
+
+- name: Enable process group
+  supervisorctl: name='odr-encoder:' state=present
+
+- name: Restart supervisord processes
+  supervisorctl: name='odr-encoder:' state=restarted
+  ignore_errors: yes
+
+

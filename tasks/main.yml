@@ -1,0 +1,72 @@
+---
+
+# required packages
+- name: Ensure dependencies are installed
+  apt: "pkg={{ item }} state=present"
+  with_items:
+   - build-essential
+   - automake
+   - supervisor
+   - ntpdate
+   - alsa-utils
+   - libvlc-dev
+   - vlc-nox
+   - libasound2-dev
+   - libmagickwand-dev
+   - libzmq3-dev
+  changed_when: False
+  become: yes
+  become_user: root
+  when: ansible_os_family == 'Debian'
+
+# users & groups
+- group: name={{ encoder_group }} state=present gid=2002
+- user: name={{ encoder_user }}
+        comment="odr user"
+        shell=/bin/bash
+        uid=2002
+        group={{ encoder_group }}
+        groups="sudo,audio"
+
+# directories & files
+- name: Create log directory
+  file: path={{ encoder_log_dir }} state=directory
+
+# source installs
+- include: install-libfec.yml
+  tags: install,libfec
+  become: yes
+  become_user: "{{ encoder_user }}"
+
+# ODR FDK AAC
+- include: install-aac-dabplus.yml
+  tags: install,aac-dabplus
+  become: yes
+  become_user: "{{ encoder_user }}"
+
+# encoder configuration
+- include: configuration.yml
+  tags: configuration
+  become: yes
+  become_user: root
+
+# dls metadata update (ftp)
+- include: dls-ftp.yml
+  tags: dls,ftp
+  become: yes
+  become_user: root
+  when: encoder_ftp_enabled is defined and encoder_ftp_enabled == true
+
+# digris service api client
+- include: service-client.yml
+  tags: service,service-client
+  become: yes
+  become_user: root
+  when: encoder_service_client_enabled is defined and encoder_service_client_enabled == true
+
+# include pre-login info (/etc/issues)
+- include: pre-login-info.yml
+  tags: system,pre-login-info
+  become: yes
+  become_user: root
+  when: encoder_pre_login_info_enabled is defined and encoder_pre_login_info_enabled == true

@@ -1,0 +1,9 @@
+---
+
+##
+# task to add information to the pre-login screen, using
+# /etc/issues
+
+- name: Add /etc/issue file
+  template: src=issue.j2
+            dest=/etc/issue

@@ -1,0 +1,18 @@
+galaxy_info:
+  author: Jonas Ohrstrom
+  description: digris DAB+ encoder
+  company: hazelfire llc
+  license: MIT
+  min_ansible_version: 1.6
+  github_branch: master
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+  categories:
+  - database
+  - system
+
+  galaxy_tags: ['audio']
+
+dependencies: []

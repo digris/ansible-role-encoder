@@ -1,0 +1,29 @@
+---
+
+- name: Create script directory
+  file: path={{ encoder_run_dir }}/ftp/
+        state=directory
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+
+
+- name: Install python-pyftpdlib package
+  apt: pkg=python-pyftpdlib state=present
+
+- name: Add script file
+  copy: src=ftp_server.py
+        dest={{ encoder_run_dir }}/ftp/ftp_server.py
+        mode=0755
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+
+- name: Add supervisord config
+  template: src=supervisor.dls-ftp.conf.j2
+            dest=/etc/supervisor/conf.d/dls-ftp.conf
+
+- name: Enable process
+  supervisorctl: name='dls-ftp' state=present
+
+- name: Restart supervisord processes
+  supervisorctl: name='dls-ftp' state=restarted
+  ignore_errors: yes

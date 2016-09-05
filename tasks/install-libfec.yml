@@ -1,0 +1,47 @@
+---
+
+- stat: path=/usr/local/lib/libfec.so
+  register: libfec_installed
+
+- name: Create workspace directory
+  file: path={{ encoder_home_dir }}/src state=directory
+  when: libfec_installed.stat.exists == False
+
+- name: Chekout ka9q-fec repository from github
+  git: repo={{ encoder_libfec_repository }}
+       dest={{ encoder_home_dir }}/src/ka9q-fec
+       version={{ encoder_libfec_repository_version }}
+       accept_hostkey=yes
+       force=yes
+  changed_when: False
+  when: libfec_installed.stat.exists == False
+
+- name: Build ka9q-fec (./bootstrap)
+  command: >
+    ./bootstrap
+    chdir={{ encoder_home_dir }}/src/ka9q-fec
+  changed_when: False
+  when: libfec_installed.stat.exists == False
+
+- name: Build ka9q-fec (./configure)
+  command: >
+    ./configure
+    chdir={{ encoder_home_dir }}/src/ka9q-fec
+  changed_when: False
+  when: libfec_installed.stat.exists == False
+
+- name: Build ka9q-fec (make)
+  command: >
+    make
+    chdir={{ encoder_home_dir }}/src/ka9q-fec
+  changed_when: False
+  when: libfec_installed.stat.exists == False
+
+- name: Build ka9q-fec (make install)
+  command: >
+    make install
+    chdir={{ encoder_home_dir }}/src/ka9q-fec
+  changed_when: False
+  become: yes
+  become_user: root
+  when: libfec_installed.stat.exists == False
