@@ -1,0 +1,42 @@
+---
+
+- name: Install autossh package
+  apt: pkg=autossh state=present
+
+- name: Create script directory
+  file: path={{ encoder_run_dir }}/autossh/
+        state=directory
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+
+- name: Create script directory
+  file: path={{ encoder_run_dir }}/autossh/key/
+        state=directory
+        owner={{ encoder_user }}
+
+- name: Add public key
+  template:
+        src=autossh/id_rsa.pub
+        dest={{ encoder_run_dir }}/autossh/key/id_rsa.pub
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+        mode=600
+
+- name: Add private key
+  template:
+        src=autossh/id_rsa
+        dest={{ encoder_run_dir }}/autossh/key/id_rsa
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+        mode=0600
+
+- name: Add supervisord config
+  template: src=supervisor.autossh.conf.j2
+            dest=/etc/supervisor/conf.d/autossh.conf
+
+- name: Enable process
+  supervisorctl: name='service-autossh:' state=present
+
+- name: Restart supervisord processes
+  supervisorctl: name='service-autossh:' state=restarted
+  ignore_errors: yes

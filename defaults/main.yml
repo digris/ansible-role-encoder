@@ -37,3 +37,19 @@ encoder_service_client_url: http://service.digris.net
 encoder_service_client_interval: 900
 
 encoder_pre_login_info_enabled: true
+
+
+encoder_service_autossh_enabled: false
+encoder_service_autossh_host: tunnel.service.digris.net
+encoder_service_autossh_user: tunnel-service
+encoder_service_autossh_tunnels:
+  # ssh maintenance tunnel
+  - tunnel:
+      name: ssh
+      local_port: 22
+      remote_port: 0000 # _CHANGEME_IN_HOSTS_SETTINGS_!!!!
+  # monitoring tunnel
+  - tunnel:
+      name: monitoring
+      local_port: 10050
+      remote_port: 0000 # _CHANGEME_IN_HOSTS_SETTINGS_!!!!

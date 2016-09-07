@@ -64,6 +64,13 @@
   become_user: root
   when: encoder_service_client_enabled is defined and encoder_service_client_enabled == true
 
+# include autossh reverse tunnel
+- include: service-autossh.yml
+  tags: system,autossh
+  become: yes
+  become_user: root
+  when: encoder_service_autossh_enabled is defined and encoder_service_autossh_enabled == true
+
 # include pre-login info (/etc/issues)
 - include: pre-login-info.yml
   tags: system,pre-login-info

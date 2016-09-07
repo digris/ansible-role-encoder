@@ -1,0 +1,25 @@
+########################################################################
+# digris autossh reverse-tunnel service
+########################################################################
+[group:service-autossh]
+programs={% for item in encoder_service_autossh_tunnels %}tunnel-{{ item.tunnel.name }}{% if not loop.last %},{% endif %}{% endfor %}
+
+
+{% for item in encoder_service_autossh_tunnels %}
+# {{ item.tunnel.name }} tunnel
+[program:tunnel-{{ item.tunnel.name }}]
+directory={{ encoder_run_dir }}/autossh
+command=/usr/bin/autossh
+    -o StrictHostKeychecking=no
+    -i {{ encoder_run_dir }}/autossh/key/id_rsa
+    -nNT
+    -R 0.0.0.0:{{ item.tunnel.remote_port }}:localhost:{{ item.tunnel.local_port }} {{ encoder_service_autossh_user }}@{{ encoder_service_autossh_host }}
+user={{ encoder_user }}
+startretries=120
+autostart=true
+autorestart=true
+redirect_stderr=True
+loglevel=info
+stdout_logfile=syslog
+
+{% endfor %}
