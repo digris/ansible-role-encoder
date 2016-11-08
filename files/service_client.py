@@ -8,7 +8,7 @@ import requests
 from requests.exceptions import ConnectionError
 
 DEFAULT_INTERVAL = 60 * 15
-DEFAULT_BASE_URL = 'http://service.digris.net'
+DEFAULT_BASE_URL = 'https://service.digris.ch'
 #DEFAULT_BASE_URL = 'http://10.40.10.40:8080'
 
 class ServiceClient(object):

@@ -10,16 +10,9 @@ encoder_home_dir: /home/odr
 encoder_log_dir: /var/log/odr
 encoder_run_dir: /home/odr/encoder
 
-encoder_initial_dls_text: 'Bongiorno! Here is the encoder :)'
-encoder_outputs:
-  - /dev/null
-encoder_bitrate: 80
-encoder_pad_size: 32
-
-
 encoder_aac_dabplus_build_dir: /home/odr/src/aac-dabplus
 encoder_aac_dabplus_repository: https://github.com/Opendigitalradio/fdk-aac-dabplus.git
-encoder_aac_dabplus_repository_version: master
+encoder_aac_dabplus_repository_version: v1.2.0
 encoder_aac_dabplus_configure: '--enable-alsa'
 
 encoder_libfec_repository: https://github.com/Opendigitalradio/ka9q-fec.git
@@ -33,10 +26,16 @@ encoder_ftp_password: odr
 encoder_service_client_enabled: true
 encoder_service_client_id: '{{ encoder_id }}'
 encoder_service_client_token: '{{ encoder_access_token }}'
-encoder_service_client_url: http://service.digris.net
+encoder_service_client_url: https://service.digris.ch
 encoder_service_client_interval: 900
 
 encoder_pre_login_info_enabled: true
+
+encoder_initial_dls_text: 'Installed FDK AAC {{ encoder_aac_dabplus_repository_version }}'
+encoder_outputs:
+  - /dev/null
+encoder_bitrate: 80
+encoder_pad_size: 58
 
 
 encoder_service_autossh_enabled: false
