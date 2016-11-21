@@ -4,6 +4,10 @@
 encoder_id: '***'
 encoder_access_token: '***'
 
+
+# supervisor add encoder service
+encoder_service_enabled: true
+
 encoder_user: odr
 encoder_group: odr
 encoder_home_dir: /home/odr

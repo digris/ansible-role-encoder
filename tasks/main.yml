@@ -49,6 +49,7 @@
   tags: configuration
   become: yes
   become_user: root
+  when: encoder_service_enabled is defined and encoder_service_enabled == true
 
 # dls metadata update (ftp)
 - include: dls-ftp.yml
