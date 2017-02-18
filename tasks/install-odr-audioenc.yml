@@ -1,0 +1,29 @@
+---
+
+- name: Create workspace directory
+  file: path={{ encoder_odr_audioenc_build_dir }} state=directory
+
+- name: Chekout ODR-AudioEnc repository from github
+  git: repo={{ encoder_odr_audioenc_repository }}
+       version={{ encoder_odr_audioenc_repository_version }}
+       dest={{ encoder_odr_audioenc_build_dir }}
+       accept_hostkey=yes
+       force=yes
+  register: audioenc_repo
+
+- name: Build ODR-AudioEnc
+  command: "{{ item }} chdir={{ encoder_odr_audioenc_build_dir  }}"
+  with_items:
+    - ./bootstrap
+    - "./configure {{encoder_odr_audioenc_configure}}"
+    - make clean
+    - make
+  when: audioenc_repo.changed
+
+- name: Install ODR-AudioEnc
+  command: >
+    make install
+    chdir={{ encoder_odr_audioenc_build_dir  }}
+  become: yes
+  become_user: root
+  when: audioenc_repo.changed

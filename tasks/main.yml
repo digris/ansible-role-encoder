@@ -7,12 +7,14 @@
    - build-essential
    - automake
    - supervisor
+   - ntp
    - ntpdate
    - alsa-utils
    - libvlc-dev
    - vlc-nox
    - libasound2-dev
    - libmagickwand-dev
+   # note: on debian jessie the libzmq3-dev package installs version 4.0.5+
    - libzmq3-dev
   changed_when: False
   become: yes
@@ -32,15 +34,28 @@
 - name: Create log directory
   file: path={{ encoder_log_dir }} state=directory
 
-# source installs
-- include: install-libfec.yml
-  tags: install,libfec
+## source installs
+#- include: install-libfec.yml
+#  tags: install,libfec
+#  become: yes
+#  become_user: "{{ encoder_user }}"
+
+
+# fdk-aac
+- include: install-fdk-aac.yml
+  tags: install,odr,fdk-aac
   become: yes
   become_user: "{{ encoder_user }}"
 
-# ODR FDK AAC
-- include: install-aac-dabplus.yml
-  tags: install,aac-dabplus
+# ODR AudioEnc
+- include: install-odr-audioenc.yml
+  tags: install,odr,odr-audioenc
+  become: yes
+  become_user: "{{ encoder_user }}"
+
+# ODR PadEnc
+- include: install-odr-padenc.yml
+  tags: install,odr,odr-padenc
   become: yes
   become_user: "{{ encoder_user }}"
 
@@ -78,3 +93,9 @@
   become: yes
   become_user: root
   when: encoder_pre_login_info_enabled is defined and encoder_pre_login_info_enabled == true
+
+# post-install tasks
+- include: post-install.yml
+  tags: system,install,post-install
+  become: yes
+  become_user: root

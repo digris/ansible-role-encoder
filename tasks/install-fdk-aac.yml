@@ -1,0 +1,39 @@
+---
+
+- name: Create workspace directory
+  file: path={{ encoder_fdk_aac_build_dir }} state=directory
+
+- name: Chekout fdk-aac repository from github
+  git: repo={{ encoder_fdk_aac_repository }}
+       version={{ encoder_fdk_aac_repository_version }}
+       dest={{ encoder_fdk_aac_build_dir }}
+       accept_hostkey=yes
+       force=yes
+  register: fdk_aac_repo
+
+- name: Build fdk-aac
+  command: "{{ item }} chdir={{ encoder_fdk_aac_build_dir  }}"
+  with_items:
+    - ./bootstrap
+    - ./configure
+    - make clean
+    - make
+  when: fdk_aac_repo.changed
+
+- name: Install fdk-aac
+  command: >
+    make install
+    chdir={{ encoder_fdk_aac_build_dir  }}
+  become: yes
+  become_user: root
+  when: fdk_aac_repo.changed
+
+##
+# without ldconfig the odr-audioenc complains: "error while loading shared libraries"
+- name: ldconfig
+  command: >
+    ldconfig
+    chdir={{ encoder_fdk_aac_build_dir  }}
+  become: yes
+  become_user: root
+  when: fdk_aac_repo.changed

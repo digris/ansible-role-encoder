@@ -1,0 +1,17 @@
+---
+##
+# post install tasks
+
+
+##
+# clean up 'left overs' from older version of odr encoder
+- name: remove legacy files & directories
+  file: "path={{ item }} state=absent"
+  with_items:
+    - '{{ encoder_log_dir }}/dab-encoder.log'
+    - '{{ encoder_log_dir }}/mot-encoder.log'
+    - '{{ encoder_home_dir }}/src/ka9q-fec'
+    - '{{ encoder_home_dir }}/src/aac-dabplus'
+    - '/usr/local/bin/dabplus-enc'
+    - '/usr/local/bin/mot-encoder'
+  become: yes

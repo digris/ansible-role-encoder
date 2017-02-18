@@ -30,5 +30,3 @@
 - name: Restart supervisord processes
   supervisorctl: name='odr-encoder:' state=restarted
   ignore_errors: yes
-
-

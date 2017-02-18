@@ -2,16 +2,16 @@
 # odr dab & mot encoder processes
 ########################################################################
 [group:odr-encoder]
-programs=dab-encoder,mot-encoder
+programs=audioenc,padenc
 priority=500
 
 ########################################################################
 # dab encoder
 ########################################################################
-[program:dab-encoder]
+[program:audioenc]
 priority=102
 directory={{ encoder_run_dir }}
-command=/usr/local/bin/dabplus-enc
+command=/usr/local/bin/odr-audioenc
     -d usb
     -D
     -r 48000
@@ -30,15 +30,15 @@ redirect_stderr=True
 loglevel=info
 stdout_logfile_maxbytes=10MB
 stdout_logfile_backups=5
-stdout_logfile={{ encoder_log_dir }}/dab-encoder.log
+stdout_logfile={{ encoder_log_dir }}/audioenc.log
 
 ########################################################################
 # mot encoder
 ########################################################################
-[program:mot-encoder]
+[program:padenc]
 priority=103
 directory={{ encoder_run_dir }}
-command=/usr/local/bin/mot-encoder
+command=/usr/local/bin/odr-padenc
     --pad {{ encoder_pad_size }}
     --remove-dls
     --dir meta/slides
@@ -53,4 +53,4 @@ loglevel=info
 stopsignal=KILL
 stdout_logfile_maxbytes=10MB
 stdout_logfile_backups=5
-stdout_logfile={{ encoder_log_dir }}/mot-encoder.log
+stdout_logfile={{ encoder_log_dir }}/padenc.log

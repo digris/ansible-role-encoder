@@ -1,0 +1,29 @@
+---
+
+- name: Create workspace directory
+  file: path={{ encoder_odr_padenc_build_dir }} state=directory
+
+- name: Chekout ODR-PadEnc repository from github
+  git: repo={{ encoder_odr_padenc_repository }}
+       version={{ encoder_odr_padenc_repository_version }}
+       dest={{ encoder_odr_padenc_build_dir }}
+       accept_hostkey=yes
+       force=yes
+  register: padenc_repo
+
+- name: Build ODR-PadEnc
+  command: "{{ item }} chdir={{ encoder_odr_padenc_build_dir  }}"
+  with_items:
+    - ./bootstrap
+    - ./configure
+    - make clean
+    - make
+  when: padenc_repo.changed
+
+- name: Install ODR-PadEnc
+  command: >
+    make install
+    chdir={{ encoder_odr_padenc_build_dir  }}
+  become: yes
+  become_user: root
+  when: padenc_repo.changed
