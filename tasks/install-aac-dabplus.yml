@@ -1,0 +1,29 @@
+---
+
+- name: Create workspace directory
+  file: path={{ encoder_aac_dabplus_build_dir }} state=directory
+
+- name: Chekout FDK AAC repository from github
+  git: repo={{ encoder_aac_dabplus_repository }}
+       dest={{ encoder_aac_dabplus_build_dir }}
+       version={{ encoder_aac_dabplus_repository_version }}
+       accept_hostkey=yes
+       force=yes
+  register: aac_dabplus_repo
+
+- name: Build FDK AAC
+  command: "{{ item }} chdir={{ encoder_aac_dabplus_build_dir  }}"
+  with_items:
+    - ./bootstrap
+    - "./configure {{encoder_aac_dabplus_configure}}"
+    - make clean
+    - make
+  when: aac_dabplus_repo.changed
+
+- name: Install FDK AAC
+  command: >
+    make install
+    chdir={{ encoder_aac_dabplus_build_dir  }}
+  become: yes
+  become_user: root
+  when: aac_dabplus_repo.changed
