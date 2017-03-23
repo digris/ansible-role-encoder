@@ -12,8 +12,10 @@ priority=500
 priority=102
 directory={{ encoder_run_dir }}
 command=/usr/local/bin/odr-audioenc
-    -d usb
+    -d {{ encoder_audio_interface_input }}
+{% if encoder_audio_interface_drift_compensation == 'yes' %}
     -D
+{% endif %}
     -r 48000
     -c 2
 {% for output in encoder_outputs %}

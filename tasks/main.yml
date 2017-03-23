@@ -34,13 +34,15 @@
 - name: Create log directory
   file: path={{ encoder_log_dir }} state=directory
 
+
+##
+# audio interface specific tasks
+- include: install-asihpi.yml
+  tags: install,interface,asihpi
+  become: yes
+  when: encoder_audio_interface is defined and encoder_audio_interface == 'asi5211'
+
 ## source installs
-#- include: install-libfec.yml
-#  tags: install,libfec
-#  become: yes
-#  become_user: "{{ encoder_user }}"
-
-
 # fdk-aac
 - include: install-fdk-aac.yml
   tags: install,odr,fdk-aac

@@ -21,12 +21,12 @@ encoder_fdk_aac_repository_version: dabplus
 
 encoder_odr_audioenc_build_dir: /home/odr/src/odr-audioenc
 encoder_odr_audioenc_repository: https://github.com/Opendigitalradio/ODR-AudioEnc.git
-encoder_odr_audioenc_repository_version: v2.0.1
+encoder_odr_audioenc_repository_version: v2.1.0
 encoder_odr_audioenc_configure: '--enable-alsa'
 
 encoder_odr_padenc_build_dir: /home/odr/src/odr-padenc
 encoder_odr_padenc_repository: https://github.com/Opendigitalradio/ODR-PadEnc.git
-encoder_odr_padenc_repository_version: v2.0.1
+encoder_odr_padenc_repository_version: v2.1.1
 
 encoder_libfec_repository: https://github.com/Opendigitalradio/ka9q-fec.git
 encoder_libfec_repository_version: master
@@ -49,6 +49,31 @@ encoder_outputs:
   - /dev/null
 encoder_bitrate: 80
 encoder_pad_size: 58
+
+
+##
+# soundcard specific settings / selection
+encoder_audio_interface: scarlett2i2
+encoder_audio_interface_input: analog
+
+
+##
+# Audioscience interface
+# here we additionally have to specify the firmware version
+# to be on the safe side run:
+#     modinfo snd_asihpi
+# and eventually add the corresponding dsp6200.bin file
+#encoder_audio_interface: asi5211
+#encoder_asihpi_version: 4.14.03
+#encoder_audio_interface_input: digital
+
+##
+# drift compensation
+# see ODR-Audioenc for details. As a rule of thumbs (according to mbp):
+#  - enable drift compensation for analog inputs
+#  - disable drift compensation for digital inputs
+encoder_audio_interface_drift_compensation: no
+
 
 
 encoder_service_autossh_enabled: false

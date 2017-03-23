@@ -1,10 +1,15 @@
 ---
 
 - name: Install .asoundrc file for user
-  template: src=asoundrc.j2
+  template: src='asoundrc/{{ encoder_audio_interface }}/asoundrc.j2'
             dest={{ encoder_home_dir }}/.asoundrc
   become: yes
   become_user: '{{ encoder_user }}'
+
+- name: Install .asoundrc file for root
+  template: src='asoundrc/{{ encoder_audio_interface }}/asoundrc.j2'
+            dest=/root/.asoundrc
+  become: yes
 
 - name: Create script directory
   file: path={{ encoder_run_dir }} state=directory owner={{ encoder_user }} group={{ encoder_group }}

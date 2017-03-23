@@ -1,0 +1,58 @@
+---
+
+
+- name: add backports repository
+  apt_repository: repo='deb http://debian.ethz.ch/debian jessie-backports main contrib non-free' state=present
+
+- name: install kernel from backports
+  apt: pkg=linux-image-amd64 state=present default_release=jessie-backports
+  register: kernel_image
+
+
+##
+# https://github.com/ansible/ansible/issues/14413
+- name: reboot encoder
+  become: yes
+  shell: sleep 2 && /sbin/shutdown -r now
+  when: kernel_image.changed
+
+- name: waiting 120 secs for encoder to come back
+  local_action: wait_for host={{ ansible_default_ipv4.address }} port=22 state=started delay=120 timeout=240
+  become: false
+  when: kernel_image.changed
+
+
+- name: install alsa-utils
+  apt: pkg=alsa-utils state=present
+
+- name: install alsa-firmware-loaders
+  apt: pkg=alsa-firmware-loaders state=present
+
+##
+# copy the firmware binariy to /lib/firmware
+
+- name: create asihpi firmware directory
+  file: path=/lib/firmware/asihpi/
+        state=directory
+
+- name: copy dsp6200.bin to firmware directory
+  copy: src='asihpi/{{ encoder_asihpi_version }}/firmware/dsp6200.bin'
+        dest=/lib/firmware/asihpi/dsp6200.bin
+  register: asihpi_firmware_bin
+
+- name: unload asihpi modules
+  command: rmmod snd_asihpi
+  ignore_errors: yes
+  when: asihpi_firmware_bin.changed
+
+- name: load asihpi modules
+  command: modprobe snd_asihpi
+  when: asihpi_firmware_bin.changed
+
+
+##
+# settings for ASI5211 card
+
+- name: set ASI5211 sample rate to 48kHz
+  command: amixer cset name="Clock 0 Localrate" 48000
+  changed_when: False
