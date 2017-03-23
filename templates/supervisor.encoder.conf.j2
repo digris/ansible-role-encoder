@@ -30,9 +30,7 @@ autostart=true
 autorestart=true
 redirect_stderr=True
 loglevel=info
-stdout_logfile_maxbytes=10MB
-stdout_logfile_backups=5
-stdout_logfile={{ encoder_log_dir }}/audioenc.log
+stdout_logfile=syslog
 
 ########################################################################
 # mot encoder
@@ -53,6 +51,4 @@ autorestart=true
 redirect_stderr=True
 loglevel=info
 stopsignal=KILL
-stdout_logfile_maxbytes=10MB
-stdout_logfile_backups=5
-stdout_logfile={{ encoder_log_dir }}/padenc.log
+stdout_logfile=syslog
