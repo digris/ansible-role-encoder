@@ -1,0 +1,37 @@
+---
+
+- name: install liquidsoap
+  apt: pkg=liquidsoap state=present
+
+- name: install liquidsoap-plugin-alsa
+  apt: pkg=liquidsoap-plugin-alsa state=present
+
+- name: install liquidsoap-plugin-faad
+  apt: pkg=liquidsoap-plugin-faad state=present
+
+
+- name: add supervisord config
+  template: src=source-monitoring/supervisor.monitoring.conf.j2
+            dest=/etc/supervisor/conf.d/source-monitoring.conf
+
+##
+# adding monitoring scripts
+
+- name: create script directory
+  file: path={{ encoder_home_dir }}/soure-monitoring/
+        state=directory
+        owner={{ encoder_user }}
+        group={{ encoder_group }}
+
+- name: add monitoring scripts
+  template: src=source-monitoring/monitoring.liq
+            dest={{ encoder_home_dir }}/soure-monitoring/monitoring.liq
+            owner={{ encoder_user }}
+            group={{ encoder_group }}
+
+- name: enable process
+  supervisorctl: name='source-monitoring' state=present
+
+- name: restart supervisord processes
+  supervisorctl: name='source-monitoring' state=restarted
+  ignore_errors: yes

@@ -26,6 +26,9 @@ def ftp_server(opts):
     handler = FTPHandler
     handler.authorizer = authorizer
 
+    # TODO: eventually add configuration option for passive ports / port range
+    handler.passive_ports = range(60000, 65535)
+
     server = FTPServer(opts.bind.split(':'), handler)
     server.serve_forever()
 

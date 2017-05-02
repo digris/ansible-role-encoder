@@ -1,0 +1,15 @@
+########################################################################
+# encoder source monitoring
+# stream available under local liquidsoap/harbor output on port 8000
+########################################################################
+
+[program:source-monitoring]
+directory={{ encoder_run_dir }}
+command=/usr/bin/liquidsoap /home/odr/soure-monitoring/monitoring.liq
+user={{ encoder_user }}
+startretries=120
+autostart=true
+autorestart=true
+redirect_stderr=True
+loglevel=info
+stdout_logfile=syslog

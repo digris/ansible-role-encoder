@@ -1,0 +1,47 @@
+#######################################################################
+# .asoundrc
+#######################################################################
+
+# hardware interface
+pcm.usb {
+    type hw
+    card USB
+}
+
+# shared dmix ("output")
+pcm.mix {
+    type dmix
+    ipc_key 34521
+    slave {
+        pcm "usb"
+    }
+}
+# shared dsnoop ("input")
+pcm.snoop {
+    type dsnoop
+    ipc_key 34523
+    slave {
+        pcm "usb"
+    }
+}
+# map dmix & dsnoop to asym device
+pcm.shared {
+    type asym
+    playback.pcm "mix"
+    capture.pcm "snoop"
+}
+# provide "plug" access to asym device
+pcm.pshared {
+    type plug
+    slave.pcm "shared"
+}
+# provide shareable asym device as default
+pcm.!default {
+    type plug
+    slave.pcm "shared"
+}
+# hide non relevant things from amixer & co
+ctl.!default {
+    type hw
+    card USB
+}

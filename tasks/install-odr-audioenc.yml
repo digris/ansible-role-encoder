@@ -15,7 +15,7 @@
   command: "{{ item }} chdir={{ encoder_odr_audioenc_build_dir  }}"
   with_items:
     - ./bootstrap
-    - "./configure {{encoder_odr_audioenc_configure}}"
+    - "./configure {{encoder_odr_audioenc_configure}}{% if encoder_soundsystem == 'jackd' %} --enable-jack{% endif %} "
     - make clean
     - make
   when: audioenc_repo.changed

@@ -32,8 +32,7 @@
 
 # directories & files
 - name: Create log directory
-  file: path={{ encoder_log_dir }} state=directory
-
+  file: path={{ encoder_log_dir }} state=directory owner={{ encoder_user }} group={{ encoder_group }}
 
 ##
 # audio interface specific tasks
@@ -41,6 +40,20 @@
   tags: install,interface,asihpi
   become: yes
   when: encoder_audio_interface is defined and encoder_audio_interface == 'asi5211'
+
+##
+# sound-system specific tasks
+- include: install-jackd.yml
+  tags: install,soundsystem,jackd
+  become: yes
+  become_user: "{{ encoder_user }}"
+  when: encoder_soundsystem is defined and encoder_soundsystem == 'jackd'
+
+- include: uninstall-jackd.yml
+  tags: install,soundsystem,jackd
+  become: yes
+  become_user: "{{ encoder_user }}"
+  when: encoder_soundsystem is defined and encoder_soundsystem != 'jackd'
 
 ## source installs
 # fdk-aac
@@ -83,11 +96,11 @@
   when: encoder_service_client_enabled is defined and encoder_service_client_enabled == true
 
 # include autossh reverse tunnel
-- include: service-autossh.yml
-  tags: system,autossh
-  become: yes
-  become_user: root
-  when: encoder_service_autossh_enabled is defined and encoder_service_autossh_enabled == true
+#- include: service-autossh.yml
+#  tags: system,autossh
+#  become: yes
+#  become_user: root
+#  when: encoder_service_autossh_enabled is defined and encoder_service_autossh_enabled == true
 
 # include pre-login info (/etc/issues)
 - include: pre-login-info.yml
@@ -95,6 +108,13 @@
   become: yes
   become_user: root
   when: encoder_pre_login_info_enabled is defined and encoder_pre_login_info_enabled == true
+
+# include source monitoring
+- include: install-source-monitoring.yml
+  tags: system,source-monitoring
+  become: yes
+  become_user: root
+  when: encoder_source_monitoring_enabled is defined and encoder_source_monitoring_enabled == true
 
 # post-install tasks
 - include: post-install.yml

@@ -1,0 +1,22 @@
+---
+
+- name: stop jackd service
+  systemd: state=stopped name=jackd daemon_reload=yes
+  become: yes
+  become_user: root
+  ignore_errors: true
+
+- name: check if workspace directory exists
+  stat: path={{ encoder_jackd_build_dir  }}
+  register: jackd_workspace_directory
+
+- name: uninstall jack2
+  command: >
+    ./waf uninstall
+    chdir={{ encoder_jackd_build_dir  }}
+  become: yes
+  become_user: root
+  when: jackd_workspace_directory.stat.exists == True
+
+- name: remove jackd workspace directory
+  file: path={{ encoder_jackd_build_dir }} state=absent

@@ -1,0 +1,12 @@
+[Unit]
+Description=JACK
+After=sound.target
+
+[Service]
+LimitRTPRIO=infinity
+LimitMEMLOCK=infinity
+User={{ encoder_user }}
+ExecStart=/usr/local/bin/jackd -dalsa -d{{ encoder_audio_interface_input }} -r48000 -p512 -n3
+
+[Install]
+WantedBy=multi-user.target

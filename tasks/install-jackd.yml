@@ -1,0 +1,57 @@
+---
+
+- name: install jackd packages
+  apt: name={{item}} state=installed
+  with_items:
+       - build-essential
+       - libsamplerate-dev
+       - libasound-dev
+       - libsndfile-dev
+
+- name: create workspace directory
+  file: path={{ encoder_jackd_build_dir }} state=directory
+
+- name: chekout jack2 repository from github
+  git: repo={{ encoder_jackd_repository }}
+       version={{ encoder_jackd_repository_version }}
+       dest={{ encoder_jackd_build_dir }}
+       accept_hostkey=yes
+       force=yes
+  register: jackd_repo
+
+- name: build jack2
+  command: "{{ item }} chdir={{ encoder_jackd_build_dir  }}"
+  with_items:
+    - ./waf configure --alsa --prefix=/usr/local --libdir=/usr/lib/x86_64-linux-gnu
+    - ./waf
+  when: jackd_repo.changed
+
+- name: install jack2
+  command: >
+    ./waf install
+    chdir={{ encoder_jackd_build_dir  }}
+  become: yes
+  become_user: root
+  when: jackd_repo.changed
+
+##
+# http://jackaudio.org/faq/linux_rt_config.html
+- name: add security/limits config
+  template: src=jackd/99-audio.conf.j2
+            dest=/etc/security/limits.d/99-audio.conf
+  become: yes
+  become_user: root
+
+
+##
+# add service
+- name: install jackd systemd unit file
+  template: src=jackd/jackd.service.j2
+            dest=/etc/systemd/system/jackd.service
+  become: yes
+  become_user: root
+
+- name: start jackd service
+  systemd: state=started name=jackd daemon_reload=yes
+  become: yes
+  become_user: root

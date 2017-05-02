@@ -1,0 +1,23 @@
+pcm.analog {
+    type hw
+    card 0
+    device 0
+    subdevice 0
+}
+
+pcm.digital {
+    type hw
+    card 0
+    device 0
+    subdevice 1
+}
+
+pcm.!default {
+    type plug
+    slave.pcm "{{ encoder_audio_interface_input }}"
+}
+
+ctl.pcm1 {
+    type hw
+    card 0
+}

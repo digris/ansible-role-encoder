@@ -51,6 +51,23 @@ encoder_bitrate: 80
 encoder_pad_size: 58
 
 
+
+##
+# jackd
+# (will only be installed if enabled)
+encoder_jackd_build_dir: /home/odr/src/jackd
+encoder_jackd_repository: git://github.com/jackaudio/jack2.git
+encoder_jackd_repository_version: v1.9.10
+
+
+##
+# sound-system
+# currently supported: alsa, jackd
+encoder_soundsystem: alsa
+
+
+
+
 ##
 # soundcard specific settings / selection
 encoder_audio_interface: scarlett2i2
@@ -90,3 +107,7 @@ encoder_service_autossh_tunnels:
       name: monitoring
       local_port: 10050
       remote_port: 0000 # _CHANGEME_IN_HOSTS_SETTINGS_!!!!
+
+
+
+encoder_source_monitoring_enabled: false

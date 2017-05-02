@@ -12,8 +12,13 @@ priority=500
 priority=102
 directory={{ encoder_run_dir }}
 command=/usr/local/bin/odr-audioenc
-    -d {{ encoder_audio_interface_input }}
-{% if encoder_audio_interface_drift_compensation == 'yes' %}
+{% if encoder_soundsystem == 'alsa' %}
+    -d default
+{% endif %}
+{% if encoder_soundsystem == 'jackd' %}
+    -j encoder
+{% endif %}
+{% if encoder_audio_interface_drift_compensation %}
     -D
 {% endif %}
     -r 48000
