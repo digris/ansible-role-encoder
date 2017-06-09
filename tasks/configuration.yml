@@ -18,15 +18,44 @@
 - name: Create initial dls text file
   copy: content={{ encoder_initial_dls_text }} dest={{ encoder_run_dir }}/meta/dls.txt owner={{ encoder_user }} group={{ encoder_group }}
 
-- name: Add supervisord config
+- name: Add ODR supervisord config
   template: src=supervisor.encoder.conf.j2
             dest=/etc/supervisor/conf.d/odr-encoder.conf
   become: yes
   become_user: root
 
-- name: Enable process group
+- name: Enable odr-encoder process group
   supervisorctl: name='odr-encoder:' state=present
 
-- name: Restart supervisord processes
-  supervisorctl: name='odr-encoder:' state=restarted
+#- name: Restart odr-encoder supervisord processes
+#  supervisorctl: name='odr-encoder:' state=restarted
+#  ignore_errors: yes
+
+- name: Restart odr-encoder:padenc supervisord processes
+  supervisorctl: name='odr-encoder:padenc' state=restarted
   ignore_errors: yes
+
+##
+# ansure only primary encoder is running (and non-primary are stopped)
+
+# odr-audioenc case
+- name: Restart odr-encoder:audioenc supervisord processes
+  supervisorctl: name='odr-encoder:audioenc' state=restarted
+  ignore_errors: yes
+  when: encoder_odr_type_primary == 'audioenc'
+
+- name: Stop odr-encoder:audioenc supervisord processes
+  supervisorctl: name='odr-encoder:audioenc' state=stopped
+  ignore_errors: yes
+  when: encoder_odr_type_primary != 'audioenc'
+
+# odr-sourcecompanion case
+- name: Restart odr-encoder:sourcecompanion supervisord processes
+  supervisorctl: name='odr-encoder:sourcecompanion' state=restarted
+  ignore_errors: yes
+  when: encoder_odr_type_primary == 'sourcecompanion'
+
+- name: Stop odr-encoder:sourcecompanion supervisord processes
+  supervisorctl: name='odr-encoder:sourcecompanion' state=stopped
+  ignore_errors: yes
+  when: encoder_odr_type_primary != 'sourcecompanion'

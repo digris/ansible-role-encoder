@@ -31,6 +31,11 @@ encoder_odr_padenc_repository_version: v2.1.1
 encoder_libfec_repository: https://github.com/Opendigitalradio/ka9q-fec.git
 encoder_libfec_repository_version: master
 
+encoder_odr_sourcecompanion_build_dir: /home/odr/src/odr-sourcecompanion
+encoder_odr_sourcecompanion_repository: https://github.com/Opendigitalradio/ODR-SourceCompanion.git
+encoder_odr_sourcecompanion_repository_version: v0.1.0
+
+
 encoder_ftp_enabled: true
 encoder_ftp_bind: 0.0.0.0:2121
 encoder_ftp_username: odr
@@ -65,6 +70,25 @@ encoder_jackd_repository_version: v1.9.10
 # currently supported: alsa, jackd
 encoder_soundsystem: alsa
 
+
+##
+# ODR-SourceCompanion
+# in case using an external encoder, like the AVT AE1
+encoder_odr_sourcecompanion_enabled: false
+encoder_odr_sourcecompanion_input_uri: udp://:7000
+encoder_odr_sourcecompanion_control_uri: udp://0.0.0.0:10000
+encoder_odr_sourcecompanion_pad_port: 32010
+encoder_odr_sourcecompanion_jitter_size: 40
+
+##
+# Primary encoder type
+# choices: audioenc, sourcecompanion
+#
+# setting has only an affect if ODR-SourceCompanion is in use
+# to encode with an external encoder.
+# in 'sourcecompanion-mode' the odr-audioenc is installed as well,
+# but not (auto-)started by default.
+encoder_odr_type_primary: audioenc
 
 
 

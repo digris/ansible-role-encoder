@@ -2,7 +2,8 @@
 # odr dab & mot encoder processes
 ########################################################################
 [group:odr-encoder]
-programs=audioenc,padenc
+programs=audioenc,padenc{% if encoder_odr_sourcecompanion_enabled %},sourcecompanion{% endif %}
+
 priority=500
 
 ########################################################################
@@ -31,9 +32,10 @@ command=/usr/local/bin/odr-audioenc
     -P pad.fifo
 user={{ encoder_user }}
 startretries=120
-autostart=true
+autostart={% if encoder_odr_type_primary == 'audioenc' %}true{% else %}false{% endif %}
+
 autorestart=true
-redirect_stderr=True
+redirect_stderr=true
 loglevel=info
 stdout_logfile=syslog
 
@@ -53,7 +55,39 @@ command=/usr/local/bin/odr-padenc
 user={{ encoder_user }}
 autostart=true
 autorestart=true
-redirect_stderr=True
+redirect_stderr=true
 loglevel=info
 stopsignal=KILL
 stdout_logfile=syslog
+
+
+{% if encoder_odr_sourcecompanion_enabled %}
+########################################################################
+# sourcecompanion
+########################################################################
+[program:sourcecompanion]
+priority=102
+directory={{ encoder_run_dir }}
+command=/usr/local/bin/odr-sourcecompanion
+    -c 2
+    -b {{ encoder_bitrate }}
+    -r 48000
+    --sbr
+    -p {{ encoder_pad_size }}
+    -P pad.fifo
+    --pad-port={{ encoder_odr_sourcecompanion_pad_port }}
+    --input-uri={{ encoder_odr_sourcecompanion_input_uri }}
+    --control-uri={{ encoder_odr_sourcecompanion_control_uri }}
+    --jitter-size={{ encoder_odr_sourcecompanion_jitter_size }}
+{% for output in encoder_outputs %}
+    -o {{ output }}
+{% endfor %}
+user={{ encoder_user }}
+autostart={% if encoder_odr_type_primary == 'sourcecompanion' %}true{% else %}false{% endif %}
+
+autorestart=true
+redirect_stderr=true
+loglevel=info
+stopsignal=KILL
+stdout_logfile=syslog
+{% endif %}

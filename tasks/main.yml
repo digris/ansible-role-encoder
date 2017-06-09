@@ -74,6 +74,13 @@
   become: yes
   become_user: "{{ encoder_user }}"
 
+# ODR-SourceCompanion
+- include: install-odr-sourcecompanion.yml
+  tags: install,odr,odr-sourcecompanion
+  become: yes
+  become_user: "{{ encoder_user }}"
+  when: encoder_odr_sourcecompanion_enabled is defined and encoder_odr_sourcecompanion_enabled == true
+
 # encoder configuration
 - include: configuration.yml
   tags: configuration
@@ -96,11 +103,11 @@
   when: encoder_service_client_enabled is defined and encoder_service_client_enabled == true
 
 # include autossh reverse tunnel
-#- include: service-autossh.yml
-#  tags: system,autossh
-#  become: yes
-#  become_user: root
-#  when: encoder_service_autossh_enabled is defined and encoder_service_autossh_enabled == true
+- include: service-autossh.yml
+  tags: system,autossh
+  become: yes
+  become_user: root
+  when: encoder_service_autossh_enabled is defined and encoder_service_autossh_enabled == true
 
 # include pre-login info (/etc/issues)
 - include: pre-login-info.yml

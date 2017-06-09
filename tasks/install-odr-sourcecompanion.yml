@@ -1,0 +1,29 @@
+---
+
+- name: Create workspace directory
+  file: path={{ encoder_odr_sourcecompanion_build_dir }} state=directory
+
+- name: Chekout ODR-SourceCompanion repository from github
+  git: repo={{ encoder_odr_sourcecompanion_repository }}
+       version={{ encoder_odr_sourcecompanion_repository_version }}
+       dest={{ encoder_odr_sourcecompanion_build_dir }}
+       accept_hostkey=yes
+       force=yes
+  register: sourcecompanion_repo
+
+- name: Build ODR-SourceCompanion
+  command: "{{ item }} chdir={{ encoder_odr_sourcecompanion_build_dir  }}"
+  with_items:
+    - ./bootstrap
+    - ./configure
+    - make clean
+    - make
+  when: sourcecompanion_repo.changed
+
+- name: Install ODR-SourceCompanion
+  command: >
+    make install
+    chdir={{ encoder_odr_sourcecompanion_build_dir  }}
+  become: yes
+  become_user: root
+  when: sourcecompanion_repo.changed
